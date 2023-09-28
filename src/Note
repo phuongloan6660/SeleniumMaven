@@ -184,7 +184,13 @@ CÁC HÀM CƠ BẢN CỦA WEBDRIVER
      Quản lý source code Selenium Java trên Github/Gitlab
 Link: https://anhtester.com/blog/selenium-java/selenium-java-bai-32-quan-ly-source-code-selenium-java-tren-github-gitlab
 
-    
+   Lưu ý khi dùng GIT:
+   - Clone tư trên Cloud về Local
+   - Copy Source local vào folder đã mapping với Cloud
+   - Xác nhận file mới từ local: Right click > Git Comit
+   -Đẩy source mới lên Cloud với chức năng Push..
+
+   Lấy source mới nhất vê thì dùng Pull
 
 
 
