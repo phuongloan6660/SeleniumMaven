@@ -1,0 +1,202 @@
+
+- Download apache-maven-3.9.2
+- Cài đặt thư viện vào file pom.xml
+<dependencies>
+        <!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>4.9.1</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.github.bonigarcia/webdrivermanager -->
+        <dependency>
+            <groupId>io.github.bonigarcia</groupId>
+            <artifactId>webdrivermanager</artifactId>
+            <version>5.3.3</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.7</version>
+            <scope>test</scope>
+        </dependency>
+
+
+    </dependencies>
+
+=======================================================================
+    Cách xác định Locators của Element trên Website (part 1) - Thuộc tính HTML - Xpath tuyệt đối.
+    1. Định vị các phần tủ bằng phương thức
+        - findElement() >> Trả về đối tượng WebElement
+        - findElements() >> Trả về danh sách đối tượng WebElement
+    2. Locator
+    2.1. Thuộc tính thẻ HTML
+    - ID
+    - LinkText
+    - PartialLinkText
+    - TagName
+    - ClassName: Cách này ít dùng vì không chính xác, dễ trùng, bởi nhiều phần tử chung class
+    - CSS Selector: Dựa vào đường dẫn CSS hoặc kết hợp nhiều CSS với nhau. Chúng ta có thể xác định được duy nhất hoặc nhiều phần tử element
+        + Các loại CSS Selector
+            Tag and ID
+            Tag and Class
+            Tag and Attribute
+            Tag, Class, and Attribute
+            Sub-String Matches
+                Starts With (^)
+                Ends With ($)
+                Contains (*)
+            Child Elements
+                Direct Child
+                Sub-child
+                nth-child
+        + Cách dùng CSS Selector
+        https://anhtester.com/blog/selenium-java/selenium-java-bai-5-cach-xac-dinh-locators-cua-element-tren-website
+            > Tag and ID: css=tag#id
+            driver.findElement(By.cssSelector("input#email"));
+            > Tag and Class: css=tag.class
+            driver.findElement(By.cssSelector("input#email"));
+            > Tag and Attribute: css=tag[attribute=value]
+            driver.findElement(By.cssSelector("input[name=login[username]]"));
+
+            ....
+    2.2. Xpath
+    Trong Selenium nếu không thể tìm kiếm các elements bởi các định vị như id, class, name... thì hoàn toàn
+    có thể nghĩ tới xpath để tìm các elements đó trên web, xpath cũng là phương thức được đông đảo người dùng
+     sử dụng để tìm kiếm các thành phần trên trang web.
+     + Các loại Xpath
+        > Xpath tuyệt đối
+            Xpath tuyệt đối bắt đầu bằng dấu gạch chéo đơn "/", cho phép xác định một đường dẫn tuyệt đối đến đối tượng UI
+            Xpath tuyệt đối được xem là là cách tìm kiếm phần tử dễ dàng nhất, tuy nhiên nhược điểm của nó là nếu có bất kỳ
+            thay đổi nào trên đường dẫn của element thì Xpath lấy sẽ sai.
+        > Xpath tương đối
+            Xpath tương đói bắt đầu bằng 2 dấu gạch chéo "//", cho phép xác định một đối tượng UI ở bất kỳ đâu trên trang web,
+            không cần bắt đầu bởi thẻ html trong đường dẫn.
+
+            ƯU ĐIỂM:
+            - Ngắn hơn xpath tuyệt đối
+            - Ổn định hơn
+            - Dễ xác định hơn
+            NHƯỢC ĐIỂM:
+            - Nếu hệ thống có các thẻ HTML generate thuộc tính chỉ cong tên thẻ thì hơi khó để xác định
+                => dựa vào vị trí (giống xpath tuyệt đối)
+
+            * text() : lấy đúng khoảng trắng
+            * normalize-space() - chấp nhận bỏ qua khoảng trắng, chỉ cần có chứa đúng text là được
+            * Dùng dấu chấm (.) để thay thế cho kiểu giá trị tim kiếm không xac định(attribute, text)
+
+            VD: //span[text()='Selenium']
+            //span[.='Selenium']
+
+            * Dùng dấu * để thay thế cho 1 thẻ bất ký
+
+     2.3. Ancestor (tự đọc) (xác định với tổ tiên Ancestor) không tính thẻ tổ tiên cùng cấp (bao bọc thẻ gốc)
+     //a[text(='Out of Stock']/ancestor::li
+     VD:
+     List<WebElement> listMenu = driver.findElement(By.xpath("//a[text()='Out of Stock']/ancestor::li;
+     Duyệt listMenu với for
+     listMeu[i].getText();//Text của menu
+     Assert.assertEquals(listMenu[i].getText(),Expected);
+
+     2.4. Xác định với con cháu Descendant (tính cả các thẻ con cháu đồng cấp) (trong thẻ gốc)
+
+     2.5. Xác định thông qua preceding và following
+     + Following: bắt đâu xác định các phân tử nằm dưới thẻ gốc
+     + preceding: Lấy các phần tử bên trên thẻ gốc
+
+     2.6. Xác định anh chị em nằm bên dưới thẻ gốc following-sibling
+     VD: //a[@class='title'][contains(text(),'Thời sự')]/following-sibling::div
+     Nó lấy //a[@class='title'][contains(text(),'Thời sự')] làm nút ngữ cảnh. Sau đó tìm các thẻ dv bên dưới nó và điều kiện là các
+     thẻ div khác phải là anh chị em cùng cấp thì nó sẽ lấy ra hết
+
+     2.7. preceding-sidling: Xác định anh chị em nằm bên trên nó
+
+     2.8. Xác định thông qua parent và child
+     + Parent: Tìm kiếm Elemt là cha của nút gốc có thẻ là ... (thẻ cha liền kề)
+     + Child: Tìm các Element là con của nút gốc có thẻ là ...
+
+
+==================================================================================================================================
+CÁC HÀM CƠ BẢN CỦA WEBDRIVER
+    Theo ID	driver.findElement(By.id (<element ID>))	Định vị một phần tử bằng thuộc tính ID
+
+    Theo name	driver.findElement(By.name (<element name>))	Định vị một phần tử bằng cách sử dụng thuộc tính Name
+
+    Theo class name	driver.findElement(By.className (<element class>))	Định vị một phần tử bằng thuộc tính Class
+
+    Theo tag name	driver.findElement(By.tagName (<htmltagname>))	Định vị một phần tử bằng cách sử dụng thẻ HTML
+
+    Bằng văn bản liên kết	driver.findElement(By.linkText (<linktext>))	Tìm liên kết bằng văn bản liên kết
+
+    Bằng văn bản liên kết một phần	driver.findElement(By.partialLinkText (<linktext>))	Định vị liên kết bằng văn bản một phần của liên kết
+
+    Theo CSS	driver.findElement(By.cssSelector (<css selector>))	Định vị một phần tử bằng cách sử dụng bộ chọn CSS
+
+    Theo XPath	driver.findElement(By.xpath (<xpath>))	Định vị một phần tử bằng cách sử dụng truy vấn XPath
+
+    https://anhtester.com/blog/selenium-java/selenium-java-bai-7-su-dung-cac-ham-co-ban-cua-webdriver
+
+
+    ----------------------------------------------------------------------------------------------------------------
+    Bài 8:
+    1. Dropdown List tĩnh
+    Các phương thức sử dụng:
+
+    Select dropdown sử dụng thuộc tính ID:
+
+    HTML: <select id="job1" name="user_job1">
+    Select select = new Select(driver.findElement(By.id("job1")));
+
+    Select một giá trị trong dropdown sử dụng visible text (thường sử dụng)
+
+    HTML: <option value="automation">Automation Tester</option>
+    select.selectByVisibleText("Automation Tester");
+    Java
+
+
+    Hoặc: Select một giá trị trong dropdown sử dụng value
+    select.selectByValue("automation");
+    Java
+
+
+
+    Hoặc: Select một giá trị trong dropdown sử dụng index (bắt đầu từ vị trí số 0)
+    select.selectByIndex(3);
+    Java
+
+    => <option value=”website“>Website Tester</option>
+
+    Kiểm tra dropdown có hỗ trợ dạng multi-select hay không:
+    Assert.assertFalse(select.isMultiple());
+    Java
+    Kiểm tra dropdown có 5 giá trị:
+    Assert.assertEquals(5, select.getOptions().size());
+    Java
+    => Mỗi 1 giá trị tương ứng với 1 thẻ
+
+    Kiểm tra giá trị trong dropdown hiển thị đúng sau khi đã chọn thành công (giá trị đã chọn sẽ luôn hiển thị ở vị trí đầu tiên):
+    Assert.assertEquals("Manual Tester", select.getFirstSelectedOption().getText());
+
+    -----------------------------------------------------------------------------------------------------------------------------------
+     Quản lý source code Selenium Java trên Github/Gitlab
+Link: https://anhtester.com/blog/selenium-java/selenium-java-bai-32-quan-ly-source-code-selenium-java-tren-github-gitlab
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
